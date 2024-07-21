@@ -6,7 +6,6 @@ const methodOverride = require('method-override')
 const ejsMate = require('ejs-mate')
 /* const morgan = require('morgan') */
 
-
 const app = express()
 
 // DB connection
