@@ -8,6 +8,7 @@ const ExpressError = require('./utils/ExpressError');
 const campgrounds = require('./routes/campgrounds')
 const reviews = require('./routes/reviews')
 const session = require('express-session');
+const flash = require('connect-flash');
 
 
 const app = express()
@@ -30,10 +31,9 @@ app.set('views', path.join(__dirname, 'views'))
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')))
-// Route MW's
-app.use('/campgrounds', campgrounds)
-app.use('/campgrounds/:id/reviews', reviews)
 
+
+// session- config
 const sessionConfig = {
   secret: 'keepthisasecret',
   resave: false ,
@@ -44,7 +44,19 @@ const sessionConfig = {
     maxAge: 1000 * 60 * 60 * 24 * 7
   }
 }
+// session middle-ware
 app.use(session(sessionConfig))
+app.use(flash())
+
+app.use((req, res, next)=> {
+  res.locals.success = req.flash('success');
+  res.locals.error = req.flash('error')
+  next();
+})
+
+// Route MW's
+app.use('/campgrounds', campgrounds)
+app.use('/campgrounds/:id/reviews', reviews)
 
 // Home page route handler
 app.get('/', (req, res)=>{
