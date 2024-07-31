@@ -3,7 +3,8 @@ const router = express.Router();
 const Campground = require('../models/campground')
 const catchAsync = require('../utils/catchAsync');
 const ExpressError = require('../utils/ExpressError');
-const {campgroundSchema } = require('../schemas');
+const { campgroundSchema } = require('../schemas');
+const { isLoggedIn } = require('../middleware');
 
 
 // Server side validation with Joi-Schemas for campgrounds
@@ -18,11 +19,11 @@ const validateCampground = (req, res, next)=> {
 }
 
 // CREATE
-router.get('/new', (req, res)=>{
+router.get('/new', isLoggedIn, (req, res)=>{
   res.render('campgrounds/new')
 })
 
-router.post('/',validateCampground, catchAsync(async(req, res, next)=>{
+router.post('/', isLoggedIn, validateCampground, catchAsync(async(req, res, next)=>{
   const campground = new Campground(req.body.campground)
   await campground.save();
   req.flash('success', 'Successfully made a new campground!')
@@ -45,7 +46,7 @@ router.get('/:id', catchAsync(async(req, res, next)=>{
 }))
 
 // UPDATE
-router.get('/:id/edit', catchAsync(async (req, res, next)=>{
+router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res, next)=>{
   const campground = await Campground.findById(req.params.id)
   if(!campground){
     req.flash('error', 'Campground not found!');
@@ -54,7 +55,7 @@ router.get('/:id/edit', catchAsync(async (req, res, next)=>{
   res.render('campgrounds/edit',{campground})
 }))
 
-router.put('/:id', catchAsync(async(req, res, next)=>{
+router.put('/:id', isLoggedIn, catchAsync(async(req, res, next)=>{
   const {id} = req.params;
   const campground = await Campground.findByIdAndUpdate(id, {...req.body.campground})
   req.flash('success', 'Successfully upgraded campground!')
@@ -62,7 +63,7 @@ router.put('/:id', catchAsync(async(req, res, next)=>{
 }))
 
 // DELETE
-router.delete('/:id', catchAsync(async(req, res, next)=>{
+router.delete('/:id', isLoggedIn, catchAsync(async(req, res, next)=>{
   const { id } = req.params
   await Campground.findByIdAndDelete(id)
   req.flash('success', 'Successfully deleted campground!')
