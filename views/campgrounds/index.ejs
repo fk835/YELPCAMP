@@ -1,27 +1,41 @@
 <% layout('layouts/boilerplate') %>
+<!-- map-box -->
+<div id="cluster-map"></div>
 
-<h1>All Campgrounds</h1>
-<a href="/campgrounds/new">Add New</a>
-
-
-<% for(let c of campgrounds){ %>
-  <div class="card mb-3">
-    <div class="row">
-      <div class="col-md-4">
-        <img src="<%= c.image %>" alt="" class="img-fluid">
-      </div>
-      <div class="col-md-8">
-        <div class="card-body">
-          <h5 class="card-title"><%= c.title %></h5>
-          <p class="card-text"><%= c.description %></p>
-          <p class="card-text">
-            <small class="text-muted"><%= c.location %></small>
-          </p>
-          <a href="/campgrounds/<%= c._id %>" class="btn btn-primary">Details</a>
+<div class="container">
+  <h1>All Campgrounds</h1>
+  <a href="/campgrounds/new">Add New</a>
+  
+  <% for(let c of campgrounds){ %>
+    <div class="card mb-3">
+      <div class="row">
+        <div class="col-md-4">
+          <% if(c.images.length) { %>
+            <img crossorigin="anonymous" src="<%= c.images[0].url %>" alt="" class="img-fluid">
+          <% } else {%>
+            <img crossorigin="anonymous" src="https://res.cloudinary.com/duhbamdvf/image/upload/v1722617781/YELP-CAMP/waprxw9nzuvov1zdavpc.jpg" alt="" class="img-fluid">
+          <% } %>
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <h5 class="card-title"><%= c.title %></h5>
+            <p class="card-text"><%= c.description %></p>
+            <p class="card-text">
+              <small class="text-muted"><%= c.location %></small>
+            </p>
+            <a href="/campgrounds/<%= c._id %>" class="btn btn-primary">Details</a>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-<% } %>
+  <% } %>  
+</div>
+<!-- map-tiler -->
+<script>
+  const maptilerApiKey = '<%- process.env.MAPTILER_API_KEY %>';
+  const campgrounds = { features: <%- JSON.stringify(campgrounds) %>}
+</script>
+
+<script src="/javascripts/clusterMap.js"></script>
   
 
